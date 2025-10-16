@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 import time
+import datetime
 
 from utils.database import (
     has_embed, set_embed, add_service, delete_service, get_embed_info
@@ -37,6 +38,28 @@ class CommandsCog(commands.Cog):
             f"✅ Embed créé! (ID: {msg.id})",
             ephemeral=True
         )
+
+
+    @app_commands.command(name="info", description="Obtient des informations sur le bot")
+    async def info(self, interaction: discord.Interaction):
+        """Affiche des informations sur le bot"""
+        embed = discord.Embed(
+            title="StatBot - Informations",
+            description="Un bot pour surveiller le statut des services.",
+            color=0x00ff00,
+            timestamp=datetime.datetime.utcnow()
+        )
+        embed.add_field(name="Développeur", value="<@927137288763342868>", inline=False)
+        embed.add_field(name="Version", value="1.1.0", inline=False)
+        embed.add_field(name="Serveurs", value=f"{len(self.bot.guilds)}", inline=False)
+        embed.add_field(name="Github", value="https://github.com/ruikdev/statbot", inline=False) 
+        embed.set_footer(text="ruikdev", icon_url="https://cdn.discordapp.com/avatars/927137288763342868/f919588e1050ed4f0291b4fe87818a21.webp?format=webp")
+        
+        await interaction.response.send_message(embed=embed, ephemeral=False)
+
+
+    
+    
     
     @app_commands.command(name="add_service", description="Ajoute un nouveau service à surveiller")
     async def add_service_cmd(self, interaction: discord.Interaction):
@@ -137,6 +160,42 @@ class CommandsCog(commands.Cog):
             "✅ Service supprimé!",
             ephemeral=True
         )
+
+    @app_commands.command(name="help", description="Affiche la liste des commandes disponibles")
+    async def help_cmd(self, interaction: discord.Interaction):
+        """Affiche la liste des commandes du bot"""
+        embed = discord.Embed(
+            title="📖 Aide StatBot",
+            description="Voici la liste des commandes disponibles :",
+            color=0x3498db
+        )
+        embed.add_field(
+            name="/status_embed",
+            value="Crée l'embed de statut des services dans le salon.",
+            inline=False
+        )
+        embed.add_field(
+            name="/add_service",
+            value="Ajoute un nouveau service à surveiller (formulaire).",
+            inline=False
+        )
+        embed.add_field(
+            name="/delete_service <id>",
+            value="Supprime un service surveillé (ID affiché dans l'embed).",
+            inline=False
+        )
+        embed.add_field(
+            name="/info",
+            value="Affiche des informations sur le bot.",
+            inline=False
+        )
+        embed.add_field(
+            name="/help",
+            value="Affiche cette aide.",
+            inline=False
+        )
+        embed.set_footer(text="StatBot • ruikdev")
+        await interaction.response.send_message(embed=embed, ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(CommandsCog(bot))
